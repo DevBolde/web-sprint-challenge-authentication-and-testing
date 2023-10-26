@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 
 const router = express.Router();
 
-const users = [];
+const users = require('../../data/migrations/20201123181212_users')
 
 router.post('/register', async (req, res) => {
   /*
@@ -36,12 +36,12 @@ router.post('/register', async (req, res) => {
 
   // Check if username and password are present
   if (!username || !password) {
-    return res.status(400).send("username and password required");
+    return res.json({ status: 400, message: 'username and password required'})
   }
 
   // Check if the username is already taken
   if (users.some(user => user.username === username)) {
-    return res.status(400).send("username taken");
+    return res.json({ status: 400, message: 'username taken'})
   }
 
   try {
@@ -66,7 +66,7 @@ router.post('/register', async (req, res) => {
     });
   } catch (error) {
     console.error("Error during registration:", error);
-    res.status(500).send("Internal Server Error");
+    res.json({ status: 500, message: 'Internal Server Error'})
   }
 });
 
