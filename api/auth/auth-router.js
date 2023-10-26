@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 
 const router = express.Router();
 
-const users = require('../../data/migrations/20201123181212_users')
+const users = []
 
 router.post('/register', async (req, res) => {
   /*
