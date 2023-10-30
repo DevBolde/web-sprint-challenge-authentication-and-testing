@@ -88,7 +88,7 @@ router.post('/login', async (req, res) => {
     
       // Check if username and password are present
       if (!username || !password) {
-        return res.status(400).send("username and password required");
+        return res.status(400).json({message: "username and password required"});
       }
     
       try {
@@ -97,7 +97,9 @@ router.post('/login', async (req, res) => {
     
         // Check if the user exists
         if (!user) {
-          return res.status(401).send("invalid credentials");
+          return res.status(401).json({
+            message: 'invalid credentials'
+          });
         }
     
         // Compare the provided password with the hashed password in the database
