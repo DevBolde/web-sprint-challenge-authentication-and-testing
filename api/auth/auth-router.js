@@ -49,7 +49,7 @@ router.post('/register', async (req, res, next) => {
 
     const hash = bcrypt.hashSync(password, 8);
     const newUser = { username, password: hash };
-
+      await User.add(newUser);
     res.status(201).json({
       message: `nice to have you, ${newUser.username}`
     });
