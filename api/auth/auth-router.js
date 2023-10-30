@@ -1,12 +1,13 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
+const User = require('../users/users-model')
 
 const router = express.Router();
 
-const users = []
 
-router.post('/register', async (req, res) => {
+
+router.post('/register', async (req, res, next) => {
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -32,42 +33,30 @@ router.post('/register', async (req, res) => {
     4- On FAILED registration due to the `username` being taken,
       the response body should include a string exactly as follows: "username taken".
   */
-   const { username, password } = req.body;
 
+   const { username, password } = req.body;
   // Check if username and password are present
   if (!username || !password) {
-    return res.json({ status: 400, message: 'username and password required'})
-  }
-
-  // Check if the username is already taken
-  if (users.some(user => user.username === username)) {
-    return res.json({ status: 400, message: 'username taken'})
+    return res.status(400).json({ message: 'username and password required' });
   }
 
   try {
-    // Hash the password securely
-    const hashedPassword = await bcrypt.hash(password, 8); // Using 2^8 rounds of hashing
+    const existingUser = await User.findByUsername(username);
+    
+    if (existingUser) {
+      return res.status(400).json({ status: 400, message: 'username taken' });
+    }
 
-    // Create a new user object
-    const newUser = {
-      id: users.length + 1, // Replace with an appropriate way of generating IDs
-      username,
-      password: hashedPassword,
-    };
+    const hash = bcrypt.hashSync(password, 8);
+    const newUser = { username, password: hash };
 
-    // Add the user to the database
-    users.push(newUser);
-
-    // Respond with the user details
-    res.json({
-      id: newUser.id,
-      username: newUser.username,
-      password: newUser.password, // Note: In a real application, you wouldn't send the hashed password in the response
+    res.status(201).json({
+      message: `nice to have you, ${newUser.username}`
     });
-  } catch (error) {
-    console.error("Error during registration:", error);
-    res.json({ status: 500, message: 'Internal Server Error'})
+  } catch (err) {
+    next(err);
   }
+ 
 });
 
 
@@ -104,7 +93,7 @@ router.post('/login', async (req, res) => {
   }
 
   // Find the user in the database by username
-  const user = users.find(user => user.username === username);
+  const user = User.find(user => user.username === username);
 
   // Check if the user exists
   if (!user) {
