@@ -93,21 +93,21 @@ router.post('/login', async (req, res) => {
       }
     
       try {
-        const user = await User.findByUsername(username);
+        const users = await User.findByUsername(username);
     
-        if (!user) {
+        if (!users) {
           return res.status(401).json({
             message: 'invalid credentials'
           });
         }
     
-        const passwordMatch = await bcrypt.compare(password, user.password);
+        const passwordMatch = await bcrypt.compare(password, users.password);
     
         if (passwordMatch) {
-          const token = jwt.sign({ username: user.username, userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
+          const token = jwt.sign({ username: users.username, userId: users.id }, JWT_SECRET, { expiresIn: '1h' });
     
           res.json({
-            message: `welcome, ${user.username}`,
+            message: `welcome, ${users.username}`,
             token,
           });
         } else {
