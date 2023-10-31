@@ -95,7 +95,7 @@ router.post('/login', async (req, res) => {
       try {
         const users = await User.findByUsername(username);
     
-        if (!users) {
+        if (!users.username || !users.password) {
           return res.status(401).json({
             message: 'invalid credentials'
           });
