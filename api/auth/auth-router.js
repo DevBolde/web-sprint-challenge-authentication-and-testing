@@ -111,11 +111,23 @@ router.post('/login', async (req, res) => {
             token,
           });
         } else {
-          res.status(401).send("invalid credentials");
+          res.status(401).json({ message: "invalid credentials"});
         }
       } catch (error) {
         console.error("Error during login:", error);
         res.status(500).send("Internal Server Error");
       }
     });
+
+    // function buildToken(user) {
+    //   const payload  = {
+    //     subject: user.id, 
+    //     username: user.username,
+    //     role: user.role
+    //   }
+    //   const options = {
+    //     expiresIn: '1d',
+    //   }
+    //   return jwt.sign(payload, JWT_SECRET ,options)
+    // }
 module.exports = router;
