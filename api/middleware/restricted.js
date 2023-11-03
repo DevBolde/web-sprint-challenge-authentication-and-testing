@@ -16,7 +16,7 @@ module.exports = (req, res, next) => {
  const token = req.headers.authorization;
 
 if(token) {
-  jwt.veirfy(token, JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
     if(err) {
       next({status: 401, message: "token invalid"})
     }else{
